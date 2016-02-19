@@ -140,9 +140,20 @@ module lid(inset = 0) {
         }
 
         if (honeycomb_depth > 0) {
-            translate([(-(1/2) * honeycomb_width), (-(1/2) * honeycomb_length), wall_width / 2]) {
-                color("red");
-                honeycomb(honeycomb_length, honeycomb_width, honeycomb_depth, honeycomb_diameter, honeycomb_wall_thickness);
+            translate([-((.5 * honeycomb_width) + (wall_width / 6)), - ((.5 * honeycomb_length) - (wall_width / 2)), wall_width / 2]) {
+                union() {
+                    honeycomb(honeycomb_length, honeycomb_width, honeycomb_depth, honeycomb_diameter, honeycomb_wall_thickness);
+                    
+                    difference() {
+                        translate([(.5 * honeycomb_width), (.5 * honeycomb_length), wall_width / 4]) {
+                            cube([honeycomb_width + (honeycomb_wall_thickness), honeycomb_length + (honeycomb_wall_thickness * 2), honeycomb_depth], center = true);
+                        };
+                        
+                        translate([(.5 * honeycomb_width), (.5 * honeycomb_length), wall_width / 4]) {
+                            cube([honeycomb_width, honeycomb_length, honeycomb_depth], center = true);
+                        };
+                    };
+                };
             };
         }
     };
