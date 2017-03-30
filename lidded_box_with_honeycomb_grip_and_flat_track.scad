@@ -54,6 +54,12 @@ wall_support_width = 0;
 wall_support_height = box_height - (notch_depth + (2 * wall_width));
 
 /*
+If you want a sliding divider that splits the length of the box internally
+*/
+//divider_wall = 0;
+divider_wall = wall_width;
+
+/*
 The lid, slightly smaller than the slot in the box. The inset will give just enough that printing
 will either require no trimming or little sanding to get the lid to slide easily in the box.
 */
@@ -78,18 +84,53 @@ union () {
         };
 
     if (wall_support_width > 0) {
-        translate([- (.5 * (box_width - (4 * wall_width))), 0, (.5 * wall_support_height) + wall_width])
+        translate([- (.5 * (box_width - (4 * wall_width))), 0, (.5 * wall_support_height) + wall_width]) {
             cube([wall_width * 2, wall_width * 2, wall_support_height], center = true);
+        }
 
-        translate([(.5 * (box_width - (4 * wall_width))), 0, (.5 * wall_support_height) + wall_width])
+        translate([(.5 * (box_width - (4 * wall_width))), 0, (.5 * wall_support_height) + wall_width]) {
             cube([wall_width * 2, wall_width * 2, wall_support_height], center = true);
+        }
+    }
+    
+    if (divider_wall > 0) {
+        difference () {
+            union() {
+                translate([- (.5 * (box_width - (2.5 * wall_width))), 0, (.5 * wall_support_height) + wall_width]) {
+                    cube([wall_width / 2, wall_width * 3, wall_support_height], center = true);
+                }
+
+                translate([(.5 * (box_width - (2.5 * wall_width))), 0, (.5 * wall_support_height) + wall_width]) {
+                    cube([wall_width / 2, wall_width * 3, wall_support_height], center = true);
+                }
+            }
+            
+            translate([0, 0, (.5 * wall_support_height + wall_width)]) {
+                cube([box_width, wall_width + 1, wall_support_height], center = true);
+            }
+        }
     }
 };
+
+
 
 translate([box_width + 4, 0, wall_width / 2]) {
     lid(0.25);
 };
 
+if (divider_wall > 0) {
+    translate([0, .75 * box_length, .5 * wall_width]) {
+        cube([box_width - (wall_width * 2) - 1, wall_support_height, wall_width - .5], center = true);
+    }
+}
+
+module walledDivider() {
+    
+}
+
+module divider(thickness = 0, width = 0, height = 0) {
+    
+}
 
 module lid(inset = 0) {
     union() {
@@ -146,11 +187,11 @@ module lid(inset = 0) {
                     
                     difference() {
                         translate([(.5 * honeycomb_width), (.5 * honeycomb_length), wall_width / 4]) {
-                            cube([honeycomb_width + (honeycomb_wall_thickness), honeycomb_length + (honeycomb_wall_thickness * 2), honeycomb_depth], center = true);
+                            cube([honeycomb_width, honeycomb_length + (honeycomb_wall_thickness * 2), honeycomb_depth], center = true);
                         };
                         
                         translate([(.5 * honeycomb_width), (.5 * honeycomb_length), wall_width / 4]) {
-                            cube([honeycomb_width, honeycomb_length, honeycomb_depth], center = true);
+                            cube([honeycomb_width - (honeycomb_wall_thickness * 2), honeycomb_length , honeycomb_depth], center = true);
                         };
                     };
                 };
